@@ -5,8 +5,3 @@ resource "aws_instance" "example" {
     Name = "example-instance"
   }
 }
-
-resource "aws_eip" "lb" {
-  instance = aws_instance.example.id
-  domain   = "vpc"
-}
