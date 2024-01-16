@@ -1,4 +1,4 @@
-resource "aws_vpc" "example" {
+resource "aws_vpc" "vpc" {
   cidr_block           = var.vpc_cidr
   enable_dns_hostnames = true
   enable_dns_support = true
@@ -8,23 +8,34 @@ resource "aws_vpc" "example" {
 }
 
 resource "aws_internet_gateway" "gw" {
-  vpc_id = "${aws_vpc.example.id}"
+  vpc_id = "${aws_vpc.vpc.id}"
 }
 
-resource "aws_subnet" "example" {
-  vpc_id                  = aws_vpc.example.id
-  cidr_block              = var.subnet_cidr
-  availability_zone       = "ap-south-2a"  # Change this to your preferred availability zone
+resource "aws_subnet" "public_subnet" {
+  vpc_id                  = "${aws_vpc.vpc.id}"
+  cidr_block              = var.public_subnet_cidr_blocks[0]
+  availability_zone       = var.availability_zone[0]  # Change this to your preferred availability zone
   map_public_ip_on_launch = true
 
   tags = {
-    Name = "example-subnet"
+    Name = "public-subnet"
+  }
+}
+
+resource "aws_subnet" "private_subnet" {
+  vpc_id                  = "${aws_vpc.vpc.id}"
+  cidr_block              = var.private_subnet_cidr_blocks[0]
+  availability_zone       = var.availability_zone[1]  # Change this to your preferred availability zone
+  map_public_ip_on_launch = true
+
+  tags = {
+    Name = "private-subnet"
   }
 }
 
 
 resource "aws_route_table" "r" {
-  vpc_id = "${aws_vpc.example.id}"
+  vpc_id = "${aws_vpc.vpc.id}"
 
   route {
     cidr_block = "0.0.0.0/0"
@@ -34,7 +45,7 @@ resource "aws_route_table" "r" {
 }
 
 resource "aws_route_table_association" "a" {
-  subnet_id = "${aws_subnet.example.id}"
+  subnet_id = "${aws_subnet.public_subnet.id}"
   route_table_id = "${aws_route_table.r.id}"
 }
 
@@ -43,7 +54,7 @@ resource "aws_route_table_association" "a" {
 resource "aws_security_group" "my_security_group" {
   name        = "MySecurityGroup"
   description = "Allow inbound SSH and HTTP traffic"
-  vpc_id      = aws_vpc.example.id
+  vpc_id      = aws_vpc.vpc.id
 
   ingress {
     from_port   = 22
@@ -74,7 +85,7 @@ resource "aws_eip" "nat_eip" {
 
 resource "aws_nat_gateway" "nat_gw" {
   allocation_id = "${aws_eip.nat_eip.id}"
-  subnet_id     = "${aws_subnet.example.id}"
+  subnet_id     = "${aws_subnet.public_subnet.id}"
 
   tags = {
     Name = "gw NAT"
@@ -83,4 +94,9 @@ resource "aws_nat_gateway" "nat_gw" {
   # To ensure proper ordering, it is recommended to add an explicit dependency
   # on the Internet Gateway for the VPC.
   depends_on = [aws_internet_gateway.gw]
+}
+
+resource "aws_eip" "lb" {
+  instance = aws_instance.example.id
+  domain   = "vpc"
 }
