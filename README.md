@@ -1,6 +1,6 @@
 Init
 
-First of all, you should clone this repo to your local machine. I have provided modules with simple examples to create an ec2 instance with all the network settings. After, go to needed example and run the next command:
+First of all, you should clone this repo to your local machine. I have provided modules with simple example to create an ec2 instance with all the network settings. After, go to needed example and run the next command:
 
 $ terraform init
 This command will init everything to provision module(s).
