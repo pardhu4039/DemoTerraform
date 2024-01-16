@@ -97,6 +97,6 @@ resource "aws_nat_gateway" "nat_gw" {
 }
 
 resource "aws_eip" "lb" {
-  instance = aws_instance.example.id
+  instance = aws_instance.my_instance.id
   domain   = "vpc"
 }
