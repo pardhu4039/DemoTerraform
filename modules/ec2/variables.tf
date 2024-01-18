@@ -1,18 +1,20 @@
-variable "instance_type" {
-    type = list(string)
-    default = ["t3.micro","m5.large","m5.xlarge"]
-}
-
-
 variable "ami" {
-  default = "ami-0ee2cdf834f8ec9ef"  
+  description = "The ID of the AMI to use for the EC2 instance"
 }
 
+variable "instance_type" {
+  description = "The type of EC2 instance"
+}
 
+variable "subnet_id" {
+  description = "The ID of the subnet where the EC2 instance will be launched"
+}
 
-variable "instance_tags" {
-  type    = map(string)
-  default = {
-    Name = "example-instance"
-  }
+variable "key_name" {
+  description = "The name of the key pair to use for the EC2 instance"
+}
+
+variable "security_group_ids" {
+  type        = list(string)
+  description = "List of security group IDs to attach to the EC2 instance"
 }
