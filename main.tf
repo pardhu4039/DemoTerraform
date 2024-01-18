@@ -14,7 +14,7 @@ module "network" {
 module "ec2_instance" {
   source              = "./modules/ec2"
   ami                 = "ami-0123456789abcdef0"
-  instance_type       = "t2.micro"
+  instance_type       = "t3.micro"
   subnet_id           = "subnet-0123456789abcdef1"
   security_group_ids  = ["sg-0123456789abcdef2"]
   key_name            = "your-key-pair-name"
