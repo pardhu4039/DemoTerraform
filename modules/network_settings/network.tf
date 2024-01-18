@@ -1,4 +1,4 @@
-resource "aws_vpc" "vpc" {
+resource "aws_vpc" "myvpc" {
   cidr_block           = var.vpc_cidr
   enable_dns_hostnames = true
   enable_dns_support = true
@@ -8,13 +8,13 @@ resource "aws_vpc" "vpc" {
 }
 
 resource "aws_internet_gateway" "gw" {
-  vpc_id = "${aws_vpc.vpc.id}"
+  vpc_id = aws_vpc.myvpc.id
 }
 
-resource "aws_subnet" "public_subnet" {
-  vpc_id                  = "${aws_vpc.vpc.id}"
-  cidr_block              = var.public_subnet_cidr_blocks[0]
-  availability_zone       = var.availability_zone[0]  # Change this to your preferred availability zone
+resource "aws_subnet" "public" {
+  vpc_id                  = aws_vpc.myvpc.id
+  cidr_block              = var.public_subnet_cidr
+  availability_zone       = var.availability_zone  # Change this to your preferred availability zone
   map_public_ip_on_launch = true
 
   tags = {
@@ -22,10 +22,10 @@ resource "aws_subnet" "public_subnet" {
   }
 }
 
-resource "aws_subnet" "private_subnet" {
-  vpc_id                  = "${aws_vpc.vpc.id}"
-  cidr_block              = var.private_subnet_cidr_blocks[0]
-  availability_zone       = var.availability_zone[1]  # Change this to your preferred availability zone
+resource "aws_subnet" "private" {
+  vpc_id                  = aws_vpc.myvpc.id
+  cidr_block              = var.private_subnet_cidr
+  availability_zone       = var.availability_zone  # Change this to your preferred availability zone
   map_public_ip_on_launch = true
 
   tags = {
@@ -34,19 +34,19 @@ resource "aws_subnet" "private_subnet" {
 }
 
 
-resource "aws_route_table" "r" {
-  vpc_id = "${aws_vpc.vpc.id}"
+resource "aws_route_table" "public" {
+  vpc_id = aws_vpc.myvpc.id
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = "${aws_internet_gateway.gw.id}"
+    gateway_id = aws_internet_gateway.gw.id
   }
   
 }
 
 resource "aws_route_table_association" "a" {
-  subnet_id = "${aws_subnet.public_subnet.id}"
-  route_table_id = "${aws_route_table.r.id}"
+  subnet_id = aws_subnet.public.id
+  route_table_id = aws_route_table.public.id
 }
 
 
@@ -54,7 +54,7 @@ resource "aws_route_table_association" "a" {
 resource "aws_security_group" "my_security_group" {
   name        = "MySecurityGroup"
   description = "Allow inbound SSH and HTTP traffic"
-  vpc_id      = aws_vpc.vpc.id
+  vpc_id      = aws_vpc.myvpc.id
 
   ingress {
     from_port   = 22
@@ -80,12 +80,12 @@ resource "aws_security_group" "my_security_group" {
 
 
 resource "aws_eip" "nat_eip" {
-  depends_on = ["aws_internet_gateway.gw"]
+  depends_on = [aws_internet_gateway.gw]
 }
 
 resource "aws_nat_gateway" "nat_gw" {
-  allocation_id = "${aws_eip.nat_eip.id}"
-  subnet_id     = "${aws_subnet.public_subnet.id}"
+  allocation_id = aws_eip.nat_eip.id
+  subnet_id     = aws_subnet.public.id
 
   tags = {
     Name = "gw NAT"
@@ -95,7 +95,6 @@ resource "aws_nat_gateway" "nat_gw" {
   # on the Internet Gateway for the VPC.
   depends_on = [aws_internet_gateway.gw]
 }
-
 resource "aws_eip" "lb" {
   instance = aws_instance.my_instance.id
   domain   = "vpc"
