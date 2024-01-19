@@ -1,14 +1,19 @@
-variable "aws_access_key" {
+variable "namespace" {
+  description = "The project namespace to use for unique resource naming"
+  default     = "TerraformDemo"
+  type        = string
+}
+
+variable "access_key" {
   type = string
 }
-variable "aws_secret_key" {
-  type = string
+
+variable "secret_key" {
+  type = string  
 }
 
-variable "region"{
-    type = string
-    description = "used for selecting location"
-    default = "ap-south-2"
+variable "region" {
+  description = "AWS region"
+  default     = "us-east-1"
+  type        = string
 }
-
-
