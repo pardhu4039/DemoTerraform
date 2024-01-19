@@ -1,21 +1,18 @@
-provider "aws" {
-  access_key = var.aws_access_key
-  secret_key = var.aws_secret_key
-  region     = var.region
+module "networking" {
+  source    = "./modules/networking"
+  namespace = var.namespace
 }
 
-module "network" {
-  source             = "./modules/network"
-  vpc_cidr           = "10.0.0.0/16"
-  public_subnet_cidr  = "10.0.1.0/24"
-  private_subnet_cidr = "10.0.101.0/24"
+module "ssh-key" {
+  source    = "./modules/ssh-key"
+  namespace = var.namespace
 }
 
-module "ec2_instance" {
-  source              = "./modules/ec2"
-  ami                 = "ami-0123456789abcdef0"
-  instance_type       = "t3.micro"
-  subnet_id           = "subnet-0123456789abcdef1"
-  security_group_ids  = ["sg-0123456789abcdef2"]
-  key_name            = "your-key-pair-name"
+module "ec2" {
+  source     = "./modules/ec2"
+  namespace  = var.namespace
+  vpc        = module.networking.vpc
+  sg_pub_id  = module.networking.sg_pub_id
+  sg_priv_id = module.networking.sg_priv_id
+  key_name   = module.ssh-key.key_name
 }
