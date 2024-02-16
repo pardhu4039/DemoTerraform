@@ -2,12 +2,12 @@ variable "namespace" {
   type = string
 }
 
-variable "private_subnet"{
+variable "private_subnets"{
 description = "Private subnet cidrs"
 type = string
 }
 
-variable "public_subnet"{
+variable "public_subnets"{
 description = "Public subnet cidrs"
 type = string
 }
