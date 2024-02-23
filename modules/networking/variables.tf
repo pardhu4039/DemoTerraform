@@ -4,12 +4,12 @@ variable "namespace" {
 
 variable "private_subnets"{
 description = "Private subnet cidrs"
-type = string
+type = list(string)
 }
 
 variable "public_subnets"{
 description = "Public subnet cidrs"
-type = string
+type = list(string)
 }
 
 variable "main_cidr"{
