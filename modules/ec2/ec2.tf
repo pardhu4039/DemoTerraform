@@ -1,4 +1,6 @@
-// Create aws_ami filter to choose the ami available in your region
+
+
+// Create aws_ami filter to pick up the ami available in your region
 data "aws_ami" "amazon-linux-2" {
   most_recent = true
   owners      = ["amazon"]
@@ -13,9 +15,9 @@ data "aws_ami" "amazon-linux-2" {
 resource "aws_instance" "ec2_public" {
   ami                         = data.aws_ami.amazon-linux-2.id
   associate_public_ip_address = true
-  instance_type               = "t2.micro"
+  instance_type               = var.instance_type
   key_name                    = var.key_name
-  subnet_id                   = var.vpc.public_subnets[0]
+  subnet_id                   = var.public_subnet_id
   vpc_security_group_ids      = [var.sg_pub_id]
 
   tags = {
@@ -54,9 +56,9 @@ resource "aws_instance" "ec2_public" {
 resource "aws_instance" "ec2_private" {
   ami                         = data.aws_ami.amazon-linux-2.id
   associate_public_ip_address = false
-  instance_type               = "t2.micro"
+  instance_type               = var.instance_type
   key_name                    = var.key_name
-  subnet_id                   = var.vpc.private_subnets[1]
+  subnet_id                   = var.private_subnet_id
   vpc_security_group_ids      = [var.sg_priv_id]
 
   tags = {
