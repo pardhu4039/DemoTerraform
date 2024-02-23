@@ -15,4 +15,6 @@ module "ec2" {
   sg_pub_id  = module.networking.sg_pub_id
   sg_priv_id = module.networking.sg_priv_id
   key_name   = module.ssh-key.key_name
+  private_subnet_id = module.networking.private_subnet_ids[0]
+  public_subnet_id = module.networking.public_subnet_ids[0]
 }
