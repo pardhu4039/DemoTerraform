@@ -18,3 +18,4 @@ module "ec2" {
   private_subnet_id = module.networking.private_subnet_ids[0]
   public_subnet_id = module.networking.public_subnet_ids[0]
 }
+
