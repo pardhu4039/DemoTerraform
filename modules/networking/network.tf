@@ -8,7 +8,6 @@ module "vpc" {
   azs                              = data.aws_availability_zones.available.names
   private_subnets                  = var.private_subnets
   public_subnets                   = var.public_subnets
-  #assign_generated_ipv6_cidr_block = true
   create_database_subnet_group     = true
   enable_nat_gateway               = true
   single_nat_gateway               = true
@@ -16,7 +15,7 @@ module "vpc" {
 
 // SG to allow SSH connections from anywhere
 resource "aws_security_group" "allow_ssh_pub" {
-  name        = "${var.namespace}-allow_ssh"
+  name        = "${var.namespace}-allow_ssh_pub"
   description = "Allow SSH inbound traffic"
   vpc_id      = module.vpc.vpc_id
 
@@ -51,7 +50,7 @@ resource "aws_security_group" "allow_ssh_priv" {
     from_port   = var.ssh_portnumber
     to_port     = var.ssh_portnumber
     protocol    = "tcp"
-    cidr_blocks = [var.cidr]
+    cidr_blocks = [var.allow_all]
   }
 
   egress {
