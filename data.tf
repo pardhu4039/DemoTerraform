@@ -1,27 +1,10 @@
-
 data "aws_vpc" "vpc" {
     id = module.networking.vpc
 }
 
-data "aws_subnets" "private" {
+data "aws_security_group" "public_sg" {
   filter {
-    name = "tag:Name"
-    values = ["${var.namespace}-vpc-private-${var.region}a"]
-    
-  }
-}
-
-data "aws_subnets" "public" {
-  filter {
-    name = "tag:Name"
-    values = ["${var.namespace}-vpc-public-${var.region}a"]
-    
-  }
-}
-
-data "aws_security_groups" "public_sg" {
-  filter {
-    name   = "group-name"
+    name   = "tag:Name"
     values = ["${var.namespace}-allow_ssh_pub"]
   }
   filter {
@@ -30,9 +13,9 @@ data "aws_security_groups" "public_sg" {
   }
   }
 
-data "aws_security_groups" "private_sg" {
+data "aws_security_group" "private_sg" {
   filter {
-    name   = "group-name"
+    name   = "tag:Name"
     values = ["${var.namespace}-allow_ssh_priv"]
   }
 filter {
@@ -40,4 +23,32 @@ filter {
     values = [data.aws_vpc.vpc.id]
   }
   
+}
+
+data "aws_subnet" "private" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.vpc.id]
+  }
+
+  filter {
+    name = "tag:Name"
+    values = [
+      "*-private-*a"
+    ]
+  }
+}
+
+data "aws_subnet" "public" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.vpc.id]
+  }
+
+  filter {
+    name = "tag:Name"
+    values = [
+      "*-public-*a"
+    ]
+  }
 }
