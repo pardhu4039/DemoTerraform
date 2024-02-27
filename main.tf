@@ -20,9 +20,9 @@ module "ec2" {
   namespace         = var.namespace
   instance_type     = var.instance_type
   vpc               = data.aws_vpc.vpc.id
-  sg_pub_id         = data.aws_security_groups.public_sg.id
-  sg_priv_id        = data.aws_security_groups.private_sg.id
+  sg_pub_id         = data.aws_security_group.public_sg.id
+  sg_priv_id        = data.aws_security_group.private_sg.id
   key_name          = module.ssh-key.key_name
-  private_subnet_id = data.aws_subnets.private.ids
-  public_subnet_id  = data.aws_subnets.public.ids
+  private_subnet_id = data.aws_subnet.private.id
+  public_subnet_id  = data.aws_subnet.public.id
 }
