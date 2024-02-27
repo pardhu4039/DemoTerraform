@@ -20,7 +20,6 @@ variable "sg_priv_id" {
 
 variable "instance_type" {
   type = string
-  default = "t2.micro"
 }
 
 variable "public_subnet_id" {
